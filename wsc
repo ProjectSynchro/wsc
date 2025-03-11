@@ -285,27 +285,22 @@ _RELEASE()
     if [ $Y = "q" ]; then _DONE
     else
 
-    echo -en "\n$dRED Downloading wine-$Y, please wait ...              $RES\n"
+    echo -en "\n$dRED Checking out wine-$Y, please wait ...              $RES\n"
 
     rm -rf ./wine-vanilla
     rm -rf ./wine-staging
-
-    mkdir -p --mode=0777 ./cache
     mkdir -p --mode=0777 ./wine-vanilla
     mkdir -p --mode=0777 ./wine-staging
-    cd ./cache
+    
+    pushd ./wine-staging || exit
+    git clone https://github.com/wine-staging/wine-staging.git .
+    git checkout v$Y
+    popd || exit
 
-    wget -q https://github.com/wine-staging/wine-staging/archive/v$Y.tar.gz
-    tar -xzf ./v$Y.tar.gz
-    cd wine-staging-$Y
-    cp -r ./* ../../wine-staging
-    cd ..
-
-    wget -q https://github.com/wine-mirror/wine/archive/wine-$Y.tar.gz
-    tar -xzf ./wine-$Y.tar.gz
-    cd wine-wine-$Y
-    cp -r ./* ../../wine-vanilla
-    cd ../../
+    pushd ./wine-vanilla || exit
+    git clone https://github.com/wine-mirror/wine.git .
+    git checkout wine-$Y
+    popd || exit
     fi
 
 }
