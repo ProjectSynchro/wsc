@@ -776,27 +776,49 @@ case $X in
 [9]* )
     clear
     echo -en $fRED "Resetting the staging source tree                  $RES\n"
+    if [ ! -d "./wine-staging" ]; then
+        mkdir -p --mode=0777 ./wine-staging
+        echo -en "$YLW 'wine-staging' directory created$RES\n"
+    fi
     pushd ./wine-staging || exit
-    git reset --hard
-    git clean -fdx
-    echo -en $fRED "Checking out the latest HEAD of the wine-staging source         $RES\n"
-    git checkout master
-    git pull
-    popd || exit
-
+    if [ -d ".git" ]; then
+        git reset --hard
+        git clean -fdx
+        echo -en $fRED "Checking out the latest HEAD of the wine-staging source         $RES\n"
+        git checkout master
+        git pull
+        popd || exit
+    else
+        echo -en "$YLW No git repository found in wine-staging, cloning repository...$RES\n"
+        rm -rf ./*
+        git clone https://github.com/wine-staging/wine-staging .
+        git checkout master
+        popd || exit
+    fi
 ;;
 
 [0]* )
     clear
     echo -en $fRED "Resetting the wine source tree                     $RES\n"
+    if [ ! -d "./wine-vanilla" ]; then
+        mkdir -p --mode=0777 ./wine-vanilla
+        echo -en "$YLW 'wine-vanilla' directory created$RES\n"
+    fi
     pushd ./wine-vanilla || exit
-    git reset --hard
-    git clean -fdx
-    echo -en $fRED "Checking out the latest HEAD of the wine source                 $RES\n"
-    git checkout master
-    git pull
-    popd || exit
-
+    if [ -d ".git" ]; then
+        git reset --hard
+        git clean -fdx
+        echo -en $fRED "Checking out the latest HEAD of the wine source                 $RES\n"
+        git checkout master
+        git pull
+        popd || exit
+    else
+        echo -en "$YLW No git repository found in wine-vanilla, cloning repository...$RES\n"
+        rm -rf ./*
+        git clone https://github.com/wine-mirror/wine .
+        git checkout master
+        popd || exit
+    fi
 ;;
 
 [a]* )
