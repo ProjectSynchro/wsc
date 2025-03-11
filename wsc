@@ -421,13 +421,13 @@ _CONTAINER()
         find "./build/data32/ccache" -size 0 -delete
         find "./build/data64/ccache" -size 0 -delete
 
-        $CONTOOL run --rm -t -v ./build:/build --env build_cores=$THREADS --name wine-builder64 wine-builder64:latest ./build64.sh $wine_version > ./build/podbuild64.log
-        $CONTOOL run --rm -t -v ./build:/build --name wine-builder64 wine-builder64:latest chown -R $UID:$UID /build/
-        $CONTOOL run --rm -t -v ./build:/build --name wine-builder64 wine-builder64:latest chmod -R 0777 /build/
+        $CONTOOL run --rm -t --privileged -v ./build:/build --env build_cores=$THREADS --name wine-builder64 wine-builder64:latest ./build64.sh $wine_version > ./build/podbuild64.log
+        $CONTOOL run --rm -t --privileged -v ./build:/build --name wine-builder64 wine-builder64:latest chown -R $UID:$UID /build/
+        $CONTOOL run --rm -t --privileged -v ./build:/build --name wine-builder64 wine-builder64:latest chmod -R 0777 /build/
 
-        $CONTOOL run --rm -t -v ./build:/build --env build_cores=$THREADS --name wine-builder32 wine-builder32:latest ./build32.sh $wine_version > ./build/podbuild32.log
-        $CONTOOL run --rm -t -v ./build:/build --name wine-builder32 wine-builder32:latest chown -R $UID:$UID /build/
-        $CONTOOL run --rm -t -v ./build:/build --name wine-builder32 wine-builder32:latest chmod -R 0777 /build/
+        $CONTOOL run --rm -t --privileged -v ./build:/build --env build_cores=$THREADS --name wine-builder32 wine-builder32:latest ./build32.sh $wine_version > ./build/podbuild32.log
+        $CONTOOL run --rm -t --privileged -v ./build:/build --name wine-builder32 wine-builder32:latest chown -R $UID:$UID /build/
+        $CONTOOL run --rm -t --privileged -v ./build:/build --name wine-builder32 wine-builder32:latest chmod -R 0777 /build/
 
         cp -r -f ./build/data32/build/* ./build/${wine_version}
         cp -r -f ./build/data64/build/* ./build/${wine_version}
