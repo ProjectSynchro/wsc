@@ -282,27 +282,47 @@ _RELEASE()
     $YLW ==> $RES "
 
     read Y
-    if [ $Y = "q" ]; then _DONE
+    if [ "$Y" = "q" ]; then _DONE
     else
 
-    echo -en "\n$dRED Checking out wine-$Y, please wait ...              $RES\n"
+        echo -en "\n$dRED Checking out wine-$Y, please wait ...              $RES\n"
 
-    rm -rf ./wine-vanilla
-    rm -rf ./wine-staging
-    mkdir -p --mode=0777 ./wine-vanilla
-    mkdir -p --mode=0777 ./wine-staging
-    
-    pushd ./wine-staging || exit
-    git clone https://github.com/wine-staging/wine-staging.git .
-    git checkout v$Y
-    popd || exit
+        # Process wine-staging:
+        if [ -d "./wine-staging/.git" ]; then
+            pushd ./wine-staging || exit
+            echo -en "$YLW Found existing wine-staging repository, cleaning up ...$RES\n"
+            git reset --hard
+            git clean -fdx
+            git pull
+            git checkout v$Y
+            popd || exit
+        else
+            mkdir -p --mode=0777 ./wine-staging
+            pushd ./wine-staging || exit
+            rm -rf ./*
+            git clone https://github.com/wine-staging/wine-staging.git .
+            git checkout v$Y
+            popd || exit
+        fi
 
-    pushd ./wine-vanilla || exit
-    git clone https://github.com/wine-mirror/wine.git .
-    git checkout wine-$Y
-    popd || exit
+        # Process wine-vanilla:
+        if [ -d "./wine-vanilla/.git" ]; then
+            pushd ./wine-vanilla || exit
+            echo -en "$YLW Found existing wine-vanilla repository, cleaning up ...$RES\n"
+            git reset --hard
+            git clean -fdx
+            git pull
+            git checkout wine-$Y
+            popd || exit
+        else
+            mkdir -p --mode=0777 ./wine-vanilla
+            pushd ./wine-vanilla || exit
+            rm -rf ./*
+            git clone https://github.com/wine-mirror/wine.git .
+            git checkout wine-$Y
+            popd || exit
+        fi
     fi
-
 }
 
 _RV_COMMIT()
